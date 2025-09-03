@@ -1,0 +1,17 @@
+services:
+    de_mysql:
+        image: mysql:8.0
+        container_name: de_mysql
+        volumes:
+            - ./mysql:/var/lib/mysql
+        ports:
+            - '3306:3306'
+        env_file:
+            - env
+        networks:
+            - suumo_network
+
+networks:
+    suumo_network:
+        driver: bridge
+        name: suumo_network

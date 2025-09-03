@@ -1,0 +1,8 @@
+requests
+scrapy==2.12.0
+lxml
+fake-useragent
+beautifulsoup4
+sqlalchemy
+pymysql
+dotenv
