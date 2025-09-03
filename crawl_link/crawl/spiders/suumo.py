@@ -51,7 +51,7 @@ class QuotesSpider(scrapy.Spider):
                                 id INT AUTO_INCREMENT PRIMARY KEY,
                                 url TEXT NOT NULL,
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                crawled BOOLEAN NOT NULL DEFAULT FALSE,
+                                crawled BOOLEAN NOT NULL DEFAULT FALSE
                             )
                         """))
             

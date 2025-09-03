@@ -3,13 +3,17 @@ services:
         image: mysql:8.0
         container_name: de_mysql
         volumes:
-            - ./mysql:/var/lib/mysql
+            - suumo_mysql:/var/lib/mysql
         ports:
             - '3306:3306'
         env_file:
             - env
         networks:
             - suumo_network
+
+volumes:
+    suumo_mysql:
+        external: true
 
 networks:
     suumo_network:
