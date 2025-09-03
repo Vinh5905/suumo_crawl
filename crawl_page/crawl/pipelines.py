@@ -93,8 +93,15 @@ class SuumoPipeline:
                     """)
                     conn.execute(query, {field: adapter.get(field) for field in fields})
 
+                    conn.execute(text(f"""
+                        UPDATE links_from_suumo
+                        SET crawled = 1
+                        WHERE id = {adapter.get('id')};
+                    """))
+                
                     conn.commit()
             
+
             spider.logger.info(f'✅ Success: Get data id={adapter.get("id")} successfully!!')
 
             return item
