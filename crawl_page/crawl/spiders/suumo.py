@@ -41,7 +41,8 @@ class QuotesSpider(scrapy.Spider):
             for id, url in links_not_crawled:
                 yield scrapy.Request(
                     url=url, 
-                    callback=functools.partial(self.parse, id=id)
+                    callback=functools.partial(self.parse, id=id),
+                    meta={"id": id}  # id for middleware using to delete when 301, 404
                 )
 
         except Exception as e:

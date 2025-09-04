@@ -7,6 +7,12 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from fake_useragent import UserAgent
+ua = UserAgent(
+    browsers=['Chrome'],
+    platforms='desktop'
+)
+
 BOT_NAME = "crawl"
 
 SPIDER_MODULES = ["crawl.spiders"]
@@ -37,10 +43,11 @@ DOWNLOAD_DELAY = 3
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#    "Accept-Language": "en",
-#}
+DEFAULT_REQUEST_HEADERS = {
+   'User-Agent': ua.random,
+   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+   # "Accept-Language": "en",
+}
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
@@ -50,9 +57,12 @@ DOWNLOAD_DELAY = 3
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "crawl.middlewares.CrawlDownloaderMiddleware": 543,
-#}
+# with request : low -> high
+# with response : high -> low
+DOWNLOADER_MIDDLEWARES = {
+   'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': 500,
+   "crawl.middlewares.HandleErrorMiddleware": 543
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

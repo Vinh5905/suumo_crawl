@@ -7,7 +7,17 @@ from scrapy import signals
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+from scrapy.exceptions import IgnoreRequest
+from sqlalchemy import text
+from resources.mysql_contextmanager import connect_mysql
 
+MYSQL_CONFIG = {
+    "host": "localhost",
+    "port": 3306,
+    "database": "suumo",
+    "user": "admin",
+    "password": "admin123",
+}
 
 class CrawlSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
@@ -101,3 +111,32 @@ class CrawlDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+class HandleErrorMiddleware:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls()
+
+    def process_response(self, request, response, spider):
+        # If 301 or 404
+        if response.status in [301, 404]:
+            rec_id = request.meta.get("id")
+            if rec_id:
+                spider.logger.warning(
+                    f"⚠️ Deleting record {rec_id} due to HTTP {response.status}"
+                )
+
+                with connect_mysql(MYSQL_CONFIG) as engine:
+                    with engine.connect() as conn:
+                        conn.execute(text(
+                            f"""DELETE FROM links_from_suumo WHERE id = {rec_id}"""
+                        ))
+                        conn.commit()
+
+            # Ignore this request, not pass to parse()
+            raise IgnoreRequest(f"Ignored due to HTTP {response.status}")
+
+        return response
